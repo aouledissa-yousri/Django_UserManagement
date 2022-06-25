@@ -99,21 +99,6 @@ class UserController:
         except KeyError: 
             return "invalid token"
 
-    
-    @staticmethod 
-    def checkAccessToken(token):
-        try:
-            decodedToken = jwt.decode(token, SECRET_KEY, algorithms = ["HS512"])
-
-            try:
-                User.objects.get(username = decodedToken["username"])        
-                return "valid token"
-            except User.DoesNotExist:
-                return "invalid token"
-
-        except jwt.exceptions.DecodeError:
-            return "invalid token"
-    
 
     
         
