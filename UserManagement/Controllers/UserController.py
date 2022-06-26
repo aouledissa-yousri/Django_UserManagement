@@ -4,7 +4,6 @@ from ..serializers import UserSerializer
 from ..models import ConfirmationCode, User
 from ..classes.Credentials import Credentials
 from Test.settings import SECRET_KEY
-from django.template.loader import render_to_string
 from django.utils import timezone
 from ..extra import *
 import jwt
@@ -82,23 +81,58 @@ class UserController:
     @staticmethod 
     def confirmAccount(request):
         data = getRequestBody(request)
+        user = User.objects.get(username = data["username"])
         try:
-            #if checkAccessToken(request.headers["Token"]) == "valid token":
-            user = User.objects.get(username = data["username"])
-            try:
-                confirmationCode = ConfirmationCode.objects.get(code = data["code"], user_id = user.id)
-                if confirmationCode.expirationDate >= timezone.now():
-                    user.verify()
-                    confirmationCode.delete()
-                    return "Confirmation code is valid"
-                return "Confirmation code has been expired"
-            except ConfirmationCode.DoesNotExist:
-                return "Confirmation code is not valid"
-            #else: 
-                #return "invalid token"
-        except KeyError: 
-            return "invalid token"
+            confirmationCode = ConfirmationCode.objects.get(code = data["code"], user_id = user.id)
+            if confirmationCode.expirationDate >= timezone.now():
+                user.verify()
+                confirmationCode.delete()
+                return "Confirmation code is valid"
+            return "Confirmation code has been expired"
+        except ConfirmationCode.DoesNotExist:
+            return "Confirmation code is not valid"
+           
+    
+    @staticmethod 
+    def checkPasswordResetCode(request):
+        code = getRequestBody(request)["code"]
+        try:
+            passwordResetCode = PasswordResetCode.objects.get(code = code)
+            if passwordResetCode.expirationDate >= timezone.now():
+                return {
+                    "message": "Password code is valid",
+                    "user": User.objects.get(id = passwordResetCode.user.id).getData()
+                }
+            return "Password reset code has been expired"
+        except PasswordResetCode.DoesNotExist:
+            return "Password reset code is not valid"
+    
+    @staticmethod 
+    def resetPassword(request):
+        userData = getRequestBody(request)
+        try: 
+            user =User.objects.get(username = userData["username"])
+            user.changePassword(userData["password"])
+            return "Password has been changed"
 
+        except User.DoesNotExist:
+            return "Invalid username"
+
+    @staticmethod 
+    def changeUsername(request):
+        userData = getRequestBody(request)
+        try: 
+            User.objects.get(username = userData["newUsername"])
+            return "Username provided already exists"
+        
+        except User.DoesNotExist: 
+            try:
+                User.objects.get(username = userData["oldUsername"]).updateUsername(userData["newUsername"])
+                return "Username has been changed"
+            
+            except User.DoesNotExist:
+                return "invalid user"
+            
 
     
         

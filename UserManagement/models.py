@@ -66,8 +66,12 @@ class User(models.Model):
         User.objects.filter(id = self.id).update(verified= self.verified)
     
     def changePassword(self, password):
-        self.password = password 
+        self.password = hashlib.sha512(str(password).encode("UTF-8")).hexdigest() 
         User.objects.filter(id = self.id).update(password = self.password)
+    
+    def updateUsername(self, username):
+        self.username = username 
+        User.objects.filter(id = self.id).update(username = self.username)
 
     @staticmethod
     def login(credentials):

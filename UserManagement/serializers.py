@@ -10,3 +10,8 @@ class ConfirmationCodeSerializer(serializers.ModelSerializer):
     class Meta: 
         model = ConfirmationCode
         fields = "__all__"
+
+class PasswordResetCodeSerializer(serializers.ModelSerializer):
+    class Meta: 
+        model = PasswordResetCode
+        fields = "__all__"

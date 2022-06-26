@@ -5,6 +5,11 @@ urlpatterns = [
     path("signUp/", views.signUp, name = "signUp"),
     path("login/", views.login),
     path("confirmAccount/", views.confirmAccount),
-    path("sendConfirmationEmail/", views.sendConfirmationEmail)
+    path("sendConfirmationEmail/", views.sendConfirmationEmail),
+    path("requestPasswordReset/", views.requestPasswordReset),
+    path("checkPasswordResetCode/", views.checkPasswordResetCode),
+    path("resetPassword/", views.resetPassword),
+    path("changePassword/", views.changePassword),
+    path("updateUsername/", views.updateUsername)
 
 ]
