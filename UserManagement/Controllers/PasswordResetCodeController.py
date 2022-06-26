@@ -9,7 +9,7 @@ from UserManagement.serializers import PasswordResetCodeSerializer
 class PasswordResetCodeController:
     
     @staticmethod 
-    def sendPasswordResetCode(userData, passwordResetCode):
+    def sendPasswordResetCode(userData):
         passwordResetCode = generateCode()
         message = "Hello "+ userData["username"] + ",\n Here is your password reset code : "+ passwordResetCode
 
