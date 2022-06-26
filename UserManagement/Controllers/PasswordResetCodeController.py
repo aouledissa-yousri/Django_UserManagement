@@ -10,7 +10,8 @@ class PasswordResetCodeController:
     
     @staticmethod 
     def sendPasswordResetCode(userData, passwordResetCode):
-        message = "Hello "+ userData["username"] + ",\n Here is your password reset code : "+ generateCode() 
+        passwordResetCode = generateCode()
+        message = "Hello "+ userData["username"] + ",\n Here is your password reset code : "+ passwordResetCode
 
         passwordReset = PasswordResetCode()
         passwordReset.setData(passwordResetCode, User.objects.get(username = userData["username"]))
