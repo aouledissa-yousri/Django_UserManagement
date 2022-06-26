@@ -13,15 +13,14 @@ import jwt
 class UserController: 
 
     @staticmethod
-    def signUp(request):
+    def signUp(request, template = None):
         userData = getRequestBody(request)
         user = User()
         user.setData(userData)
-        confirmationCode = ConfirmationCodeController.generateConfirmationCode()
         user = UserSerializer(data = user.getAllUserData())
         if user.is_valid():
             user.save()
-            ConfirmationCodeController.sendConfirmationEmail(userData, confirmationCode)
+            ConfirmationCodeController.sendConfirmationEmail(userData, template)
             return "Account created successfully now you need to verify your account"
         try:
             User.objects.get(username = userData["username"])

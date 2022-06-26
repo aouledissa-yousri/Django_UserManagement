@@ -9,8 +9,9 @@ from ..extra import *
 class ConfirmationCodeController: 
     
     @staticmethod 
-    def sendConfirmationEmail(userData, confirmationCode):
-        message = "Hello "+ userData["username"] + ",\n Thank you for signining up Here is your confirmation code: "+ generateCode()
+    def sendConfirmationEmail(userData, template = None):
+        confirmationCode = generateCode()
+        message = "Hello "+ userData["username"] + ",\n Thank you for signining up Here is your confirmation code: "+ confirmationCode
 
         code = ConfirmationCode()
         code.setData(confirmationCode, User.objects.get(username = userData["username"]))
@@ -19,14 +20,14 @@ class ConfirmationCodeController:
         if code.is_valid():
             ConfirmationCode.objects.filter(user_id = User.objects.get(username = userData["username"]).id).delete()
             code.save()
+            if template != None:
+                message = render_to_string(template, {"message": message})
+
             EmailMessage("Email confirmation", message, EMAIL_HOST_USER, [userData["email"]]).send()
             return "Code has been sent"
+
         return "confirmation code was not sent"
 
-    @staticmethod
-    def sendStyledConfirmationEmail(message, email, template):
-        temp = render_to_string(template, {"message": message})
-        EmailMessage("Email confirmation", temp, EMAIL_HOST_USER, [email]).send()
     
     
     
