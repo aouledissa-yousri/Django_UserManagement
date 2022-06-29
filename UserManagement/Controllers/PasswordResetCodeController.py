@@ -35,4 +35,4 @@ class PasswordResetCodeController:
                 
             return "Passoword reset code has been sent"
 
-        return "Password reset code was not sent"
+        return "Password reset code has not been sent"

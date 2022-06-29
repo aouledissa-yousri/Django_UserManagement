@@ -15,7 +15,11 @@ def signUp(request):
 
 @api_view(["POST"])
 def login(request):
-    return JsonResponse( UserController.login(request))
+    return JsonResponse( UserController.loginGateway(request))
+
+@api_view(["POST"])
+def checkTwoFactorAuthCode(request):
+    return JsonResponse(UserController.twoFactorAuthLogin(request))
 
 @api_view(["POST"])
 @checkAccessToken

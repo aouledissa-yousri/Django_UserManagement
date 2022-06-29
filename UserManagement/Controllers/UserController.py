@@ -1,5 +1,6 @@
 from threading import Thread
 from UserManagement.Controllers.ConfirmationCodeController import ConfirmationCodeController
+from UserManagement.Controllers.TwoFactorAuthCodeController import TwoFactorAuthCodeController
 from ..serializers import UserSerializer
 from ..models import ConfirmationCode, User
 from ..classes.Credentials import Credentials
@@ -29,12 +30,11 @@ class UserController:
             return "Account creation failed"
     
     @staticmethod 
-    def login(request):
+    def login(data, passwordFromUser = True):
         try: 
-            data = getRequestBody(request)
 
             #serach for user in database 
-            credentials = Credentials(data)
+            credentials = Credentials(data, passwordFromUser)
             account = User.login(credentials)
 
             #if username (or email) and password are correct get user data and access token 
@@ -72,6 +72,43 @@ class UserController:
         except User.DoesNotExist : 
             return {"message":"user not found"}
     
+    @staticmethod 
+    def normalLogin(data):
+        return UserController.login(data)
+
+
+    @staticmethod 
+    def twoFactorAuthLogin(request):
+        data = getRequestBody(request)
+        try:
+            user = User.objects.get(username = data["username"])
+            try:
+                code = data["verificationCode"]
+                del code
+                try:
+                    twoFactorAuthCode = TwoFactorAuthCode.objects.get(code = data["verificationCode"], user_id=user.id)
+                    if twoFactorAuthCode.expirationDate >= timezone.now():
+                        twoFactorAuthCode.delete()
+                        return UserController.login(user.getAllUserData(), False)
+                    return {"message":"Verification code has been expired"}
+                except TwoFactorAuthCode.DoesNotExist:
+                    return {"message":"Verification code is not valid"}
+
+            except KeyError: 
+                return {"message":"Verification code has not been provided"}
+        except User.DoesNotExist:
+            return {"message": "User not found"}
+    
+    @staticmethod 
+    def loginGateway(request):
+        data = getRequestBody(request)
+        try: 
+            user = User.objects.get(username = data["username"])
+            if user.twoFactorAuth:
+                return {"message": TwoFactorAuthCodeController.sendTwoFactorAuthCode(data)}
+            return UserController.normalLogin(data)
+        except User.DoesNotExist:
+            return {"message" : "User not found"}
 
     @staticmethod 
     def generateToken(payload):
@@ -86,7 +123,7 @@ class UserController:
             if confirmationCode.expirationDate >= timezone.now():
                 user.verify()
                 confirmationCode.delete()
-                return "Confirmation code is valid"
+                return UserController.login(user.getAllUserData(), False)
             return "Confirmation code has been expired"
         except ConfirmationCode.DoesNotExist:
             return "Confirmation code is not valid"
@@ -127,10 +164,11 @@ class UserController:
         except User.DoesNotExist: 
             try:
                 User.objects.get(username = userData["oldUsername"]).updateUsername(userData["newUsername"])
-                return {"message ": "Username has been changed",
-                        "token": UserController.generateToken({
-                            "username": userData["newUsername"]
-                        })
+                return {
+                    "message ": "Username has been changed",
+                    "token": UserController.generateToken({
+                        "username": userData["newUsername"]
+                    })
                 }
             
             except User.DoesNotExist:

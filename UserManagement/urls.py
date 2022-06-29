@@ -4,6 +4,7 @@ from UserManagement import views
 urlpatterns = [
     path("signUp/", views.signUp, name = "signUp"),
     path("login/", views.login),
+    path("checkTwoFactorAuthCode/", views.checkTwoFactorAuthCode),
     path("confirmAccount/", views.confirmAccount),
     path("sendConfirmationEmail/", views.sendConfirmationEmail),
     path("requestPasswordReset/", views.requestPasswordReset),

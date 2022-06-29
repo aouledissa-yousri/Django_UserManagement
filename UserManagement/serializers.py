@@ -15,3 +15,8 @@ class PasswordResetCodeSerializer(serializers.ModelSerializer):
     class Meta: 
         model = PasswordResetCode
         fields = "__all__"
+
+class TwoFactorAuthCodeSerializer(serializers.ModelSerializer):
+    class Meta: 
+        model = TwoFactorAuthCode
+        fields = "__all__"
