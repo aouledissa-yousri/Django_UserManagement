@@ -24,11 +24,11 @@ def confirmAccount(request):
 
 @api_view(["POST"])
 def sendConfirmationEmail(request):
-    return JsonResponse({"result": ConfirmationCodeController.sendConfirmationEmail(getRequestBody(request))})
+    return JsonResponse({"result": ConfirmationCodeController.sendConfirmationEmail(getRequestBody(request), "EmailConfirmation.html")})
 
 @api_view(["POST"])
 def requestPasswordReset(request):
-    return JsonResponse({"result": PasswordResetCodeController.sendPasswordResetCode(getRequestBody(request))})
+    return JsonResponse({"result": PasswordResetCodeController.sendPasswordResetCode(getRequestBody(request), "PasswordReset.html")})
 
 @api_view(["POST"])
 def checkPasswordResetCode(request):

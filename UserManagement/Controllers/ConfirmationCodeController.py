@@ -1,4 +1,5 @@
-from django.core.mail import EmailMessage
+from django.core.mail import EmailMessage, EmailMultiAlternatives
+from django.utils.html import strip_tags
 from UserManagement.models import ConfirmationCode
 from UserManagement.serializers import ConfirmationCodeSerializer
 from django.template.loader import render_to_string
@@ -22,11 +23,18 @@ class ConfirmationCodeController:
             code.save()
             if template != None:
                 message = render_to_string(template, {"message": message})
+                textContent = strip_tags(message)
 
-            EmailMessage("Email confirmation", message, EMAIL_HOST_USER, [userData["email"]]).send()
+                email = EmailMultiAlternatives("Email Confirmation", textContent, EMAIL_HOST_USER, [userData["email"]])
+                email.attach_alternative(message, "text/html")
+                email.send()
+
+            else:
+                EmailMessage("Email Confirmation", message, EMAIL_HOST_USER, [userData["email"]]).send()
+
             return "Code has been sent"
 
-        return "confirmation code was not sent"
+        return "Confirmation code has not been sent"
 
     
     

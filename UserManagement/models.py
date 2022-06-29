@@ -16,6 +16,7 @@ class User(models.Model):
     tries = models.IntegerField(default = 3)
     blocked = models.BooleanField(default=False)
     verified = models.BooleanField(default=False)
+    twoFactorAuth = models.BooleanField(default=False)
 
 
     def setData(self, data):
