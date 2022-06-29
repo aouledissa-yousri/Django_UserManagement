@@ -122,15 +122,19 @@ class UserController:
         userData = getRequestBody(request)
         try: 
             User.objects.get(username = userData["newUsername"])
-            return "Username provided already exists"
+            return {"message":"Username provided already exists"}
         
         except User.DoesNotExist: 
             try:
                 User.objects.get(username = userData["oldUsername"]).updateUsername(userData["newUsername"])
-                return "Username has been changed"
+                return {"message ": "Username has been changed",
+                        "token": UserController.generateToken({
+                            "username": userData["newUsername"]
+                        })
+                }
             
             except User.DoesNotExist:
-                return "invalid user"
+                return {"message":"invalid user"}
             
 
     
