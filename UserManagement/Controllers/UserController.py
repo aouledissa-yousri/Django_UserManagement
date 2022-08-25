@@ -1,3 +1,4 @@
+import sys
 from threading import Thread
 from UserManagement.Controllers.ConfirmationCodeController import ConfirmationCodeController
 from UserManagement.Controllers.TwoFactorAuthCodeController import TwoFactorAuthCodeController
@@ -7,6 +8,7 @@ from ..models import ConfirmationCode, User
 from ..classes.Credentials import Credentials
 from Test.settings import SECRET_KEY
 from django.utils import timezone
+from django.shortcuts import redirect
 from ..extra import *
 import jwt
 
@@ -204,6 +206,24 @@ class UserController:
             
             except User.DoesNotExist:
                 return {"message":"invalid user"}
+    
+
+    #login using google account 
+    @staticmethod 
+    def googleLogin(request):
+        return requestGoogleAccessToken(request)
+
+    #redirect to google login page 
+    @staticmethod 
+    def googleLoginGateway():
+        flow = googleAuthFlow(sys.path[0] + "/UserManagement/client_secret.json")
+        auth_url = flow.authorization_url()
+        return {"message": auth_url}
+            
+
+    @staticmethod 
+    def facebookLogin(request):
+        pass
             
 
     

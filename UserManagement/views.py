@@ -18,6 +18,16 @@ def signUp(request):
 def login(request):
     return JsonResponse(UserController.loginGateway(request))
 
+#google login gateway 
+@api_view(["GET"])
+def googleLoginGateway(request):
+    return JsonResponse(UserController.googleLoginGateway())
+
+#google login
+@api_view(["GET"])
+def googleLogin(request):
+    return JsonResponse(UserController.googleLogin(request))
+
 #user logout
 @api_view((["post"]))
 def logout(request):
