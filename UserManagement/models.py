@@ -7,8 +7,11 @@ import time
 
 # Create your models here.
 
-
 class User(models.Model):
+    pass
+
+
+class GenericUser(User, models.Model):
 
     username = models.CharField(max_length = 255, default = '', unique = True)
     email = models.CharField(max_length = 255, default = '', unique = True)
@@ -78,6 +81,22 @@ class User(models.Model):
     def login(credentials):
         return User.objects.get( Q(username=credentials.getUsername()) | Q(email=credentials.getEmail() ))
 
+
+class GoogleUser(User, models.Model):
+
+    username = models.CharField(max_length = 255, default = '', unique = True)
+    email = models.CharField(max_length = 255, default = '', unique = True)
+   
+    def setData(self, data):
+        self.username = data["name"]
+        self.email = data["email"]
+    
+    def getData(self):
+        return {
+            "username": self.username,
+            "email": self.email,
+        }
+    
 
 
 class ConfirmationCode(models.Model): 

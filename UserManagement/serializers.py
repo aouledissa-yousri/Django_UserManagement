@@ -3,7 +3,12 @@ from .models import *
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta: 
-        model = User
+        model = GenericUser
+        fields = "__all__"
+
+class GoogleUserSerializer(serializers.ModelSerializer):
+    class Meta: 
+        model = GoogleUser
         fields = "__all__"
 
 class ConfirmationCodeSerializer(serializers.ModelSerializer):

@@ -1,10 +1,9 @@
-import sys
 from threading import Thread
 from UserManagement.Controllers.ConfirmationCodeController import ConfirmationCodeController
 from UserManagement.Controllers.TwoFactorAuthCodeController import TwoFactorAuthCodeController
 from UserManagement.Controllers.TokenController import TokenController
 from ..serializers import UserSerializer
-from ..models import ConfirmationCode, User
+from ..models import ConfirmationCode, GenericUser
 from ..classes.Credentials import Credentials
 from Test.settings import SECRET_KEY
 from django.utils import timezone
@@ -14,14 +13,14 @@ import jwt
 
 
 
-class UserController: 
+class GenericUserController: 
 
 
     #create new account
     @staticmethod
     def signUp(request, template = None):
         userData = getRequestBody(request)
-        user = User()
+        user = GenericUser()
         user.setData(userData)
         user = UserSerializer(data = user.getAllUserData())
         if user.is_valid():
@@ -29,9 +28,9 @@ class UserController:
             ConfirmationCodeController.sendConfirmationEmail(userData, template)
             return "Account created successfully now you need to verify your account"
         try:
-            User.objects.get(username = userData["username"])
+            GenericUser.objects.get(username = userData["username"])
             return "Account already exists"
-        except User.DoesNotExist:
+        except GenericUser.DoesNotExist:
             return "Account creation failed"
 
 
@@ -42,7 +41,7 @@ class UserController:
 
             #serach for user in database 
             credentials = Credentials(data, passwordFromUser)
-            account = User.login(credentials)
+            account = GenericUser.login(credentials)
 
             #if username (or email) and password are correct get user data and access token 
             if account.password == credentials.getPassword() and (not account.isBlocked()):
@@ -52,9 +51,9 @@ class UserController:
 
                 account.restartTries()
 
-                token = UserController.generateToken({
-                        "username": account.username,
-                        "number": random.randint(0, 10000000000000000)
+                token = TokenController.generateToken({
+                    "username": account.username,
+                    "number": random.randint(0, 10000000000000000)
                 })
 
                 TokenController.saveToken(token)
@@ -83,7 +82,7 @@ class UserController:
             return {"message":"password is wrong"}
         
         #if user is not found
-        except User.DoesNotExist : 
+        except GenericUser.DoesNotExist : 
             return {"message":"user not found"}
     
 
@@ -97,7 +96,7 @@ class UserController:
     #login withoput 2-step verification
     @staticmethod 
     def normalLogin(data):
-        return UserController.login(data)
+        return GenericUserController.login(data)
 
 
     #check verification code
@@ -105,7 +104,7 @@ class UserController:
     def twoFactorAuthLogin(request):
         data = getRequestBody(request)
         try:
-            user = User.objects.get(username = data["username"])
+            user = GenericUser.objects.get(username = data["username"])
             try:
                 code = data["verificationCode"]
                 del code
@@ -113,14 +112,14 @@ class UserController:
                     twoFactorAuthCode = TwoFactorAuthCode.objects.get(code = data["verificationCode"], user_id=user.id)
                     if twoFactorAuthCode.expirationDate >= timezone.now():
                         twoFactorAuthCode.delete()
-                        return UserController.login(user.getAllUserData(), False)
+                        return GenericUserController.login(user.getAllUserData(), False)
                     return {"message":"Verification code has been expired"}
                 except TwoFactorAuthCode.DoesNotExist:
                     return {"message":"Verification code is not valid"}
 
             except KeyError: 
                 return {"message":"Verification code has not been provided"}
-        except User.DoesNotExist:
+        except GenericUser.DoesNotExist:
             return {"message": "User not found"}
     
     #login with 2-step verification code
@@ -132,28 +131,25 @@ class UserController:
             if user.twoFactorAuth:
                 data["email"] = user.email
                 return {"message": TwoFactorAuthCodeController.sendTwoFactorAuthCode(data)}
-            return UserController.normalLogin(data)
+            return GenericUserController.normalLogin(data)
         except User.DoesNotExist:
             return {"message" : "User not found"}
         except KeyError:
             return {"message": "Invalid username and email"}
 
-    #generate access token
-    @staticmethod 
-    def generateToken(payload):
-        return jwt.encode(payload, SECRET_KEY, algorithm = "HS512")
+    
     
     #verify account
     @staticmethod 
     def confirmAccount(request):
         data = getRequestBody(request)
-        user = User.objects.get(username = data["username"])
+        user = GenericUser.objects.get(username = data["username"])
         try:
             confirmationCode = ConfirmationCode.objects.get(code = data["code"], user_id = user.id)
             if confirmationCode.expirationDate >= timezone.now():
                 user.verify()
                 confirmationCode.delete()
-                return UserController.login(user.getAllUserData(), False)
+                return GenericUserController.login(user.getAllUserData(), False)
             return "Confirmation code has been expired"
         except ConfirmationCode.DoesNotExist:
             return "Confirmation code is not valid"
@@ -179,11 +175,11 @@ class UserController:
     def resetPassword(request):
         userData = getRequestBody(request)
         try: 
-            user =User.objects.get(username = userData["username"])
+            user =GenericUser.objects.get(username = userData["username"])
             user.changePassword(userData["password"])
             return "Password has been changed"
 
-        except User.DoesNotExist:
+        except GenericUser.DoesNotExist:
             return "Invalid username"
 
     #change username
@@ -191,41 +187,27 @@ class UserController:
     def changeUsername(request):
         userData = getRequestBody(request)
         try: 
-            User.objects.get(username = userData["newUsername"])
+            GenericUser.objects.get(username = userData["newUsername"])
             return {"message":"Username provided already exists"}
         
-        except User.DoesNotExist: 
+        except GenericUser.DoesNotExist: 
             try:
-                User.objects.get(username = userData["oldUsername"]).updateUsername(userData["newUsername"])
+                GenericUser.objects.get(username = userData["oldUsername"]).updateUsername(userData["newUsername"])
                 return {
                     "message ": "Username has been changed",
-                    "token": UserController.generateToken({
+                    "token": GenericUserController.generateToken({
                         "username": userData["newUsername"]
                     })
                 }
             
-            except User.DoesNotExist:
+            except GenericUser.DoesNotExist:
                 return {"message":"invalid user"}
     
 
-    #login using google account 
-    @staticmethod 
-    def googleLogin(request):
-        return requestGoogleAccessToken(request)
-
-    #redirect to google login page 
-    @staticmethod 
-    def googleLoginGateway():
-        flow = googleAuthFlow(sys.path[0] + "/UserManagement/client_secret.json")
-        auth_url = flow.authorization_url()
-        return {"message": auth_url}
+    
             
 
-    @staticmethod 
-    def facebookLogin(request):
-        pass
-            
-
+   
     
         
 
