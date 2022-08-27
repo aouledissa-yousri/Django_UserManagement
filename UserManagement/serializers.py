@@ -1,7 +1,7 @@
 from rest_framework import serializers 
 from .models import * 
 
-class UserSerializer(serializers.ModelSerializer):
+class GenericUserSerializer(serializers.ModelSerializer):
     class Meta: 
         model = GenericUser
         fields = "__all__"
@@ -9,6 +9,11 @@ class UserSerializer(serializers.ModelSerializer):
 class GoogleUserSerializer(serializers.ModelSerializer):
     class Meta: 
         model = GoogleUser
+        fields = "__all__"
+
+class FacebookUserSerializer(serializers.ModelSerializer):
+    class Meta: 
+        model = FacebookUser 
         fields = "__all__"
 
 class ConfirmationCodeSerializer(serializers.ModelSerializer):

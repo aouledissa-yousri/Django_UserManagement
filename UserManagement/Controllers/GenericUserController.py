@@ -2,7 +2,7 @@ from threading import Thread
 from UserManagement.Controllers.ConfirmationCodeController import ConfirmationCodeController
 from UserManagement.Controllers.TwoFactorAuthCodeController import TwoFactorAuthCodeController
 from UserManagement.Controllers.TokenController import TokenController
-from ..serializers import UserSerializer
+from ..serializers import GenericUserSerializer
 from ..models import ConfirmationCode, GenericUser
 from ..classes.Credentials import Credentials
 from Test.settings import SECRET_KEY
@@ -22,7 +22,7 @@ class GenericUserController:
         userData = getRequestBody(request)
         user = GenericUser()
         user.setData(userData)
-        user = UserSerializer(data = user.getAllUserData())
+        user = GenericUserSerializer(data = user.getAllUserData())
         if user.is_valid():
             user.save()
             ConfirmationCodeController.sendConfirmationEmail(userData, template)

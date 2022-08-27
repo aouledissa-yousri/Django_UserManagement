@@ -1,6 +1,8 @@
-from pyfacebook import GraphAPI
-from ..extra import *
+from ..serializers import FacebookUserSerializer, TokenSerializer
+from ..Controllers.TokenController import TokenController
+from ..models import FacebookUser, Token
 from django.shortcuts import redirect
+from ..extra import *
 import urllib.parse
 import sys, json, requests
 
@@ -9,6 +11,7 @@ class FacebookUserController:
     
     client_secret_data = json.loads(open(sys.path[0] + "/UserManagement/facebook_client_secret.json").read())
     authCode = ""
+    userData = {}
 
 
     @staticmethod
@@ -45,9 +48,45 @@ class FacebookUserController:
 
         #facebook login 
         if FacebookUserController.authCode == "Exchanged":
+
             FacebookUserController.authCode = ""
+
+            try: 
+                #search if user already exists
+                FacebookUser.objects.get(profileId = FacebookUserController.userData["id"])
+        
+            except FacebookUser.DoesNotExist: 
+                #save new facebook user
+                facebookUser = FacebookUser()
+                facebookUser.setData(FacebookUserController.userData)
+                facebookUser = FacebookUserSerializer(data = facebookUser.getData())
+                if facebookUser.is_valid():
+                    facebookUser.save() 
             
-            return JsonResponse({"message": "logged in"})
+            finally: 
+                #getting google user data 
+                facebookUser = FacebookUser.objects.get(profileId = FacebookUserController.userData["id"])
+
+                #generating access token 
+                token = Token()
+                token.setData(TokenController.generateToken({
+                    "username": facebookUser.username,
+                    "number": random.randint(0, 10000000000000000)
+                }))
+
+                access_token = token.getData()["token"]
+
+                #saving session token to database 
+                token = TokenSerializer(data = token.getData())
+                if token.is_valid():
+                    token.save()
+
+                return JsonResponse({
+                    "message": "success",
+                    "user": facebookUser.getData(),
+                    "token": access_token
+                })
+            
 
         #get access token after exchanging it with auth code 
         elif FacebookUserController.authCode != "":
@@ -75,14 +114,23 @@ class FacebookUserController:
         #request access token
         response = requests.get(access_token_url)
         response = json.loads(response.content)
-        print(response)
+        accessToken  = response['access_token']
 
+        
+        #get facebook user id 
+        response = requests.get(f"https://graph.facebook.com/me?access_token={accessToken}")
+        
+        #get facebook user data 
+        response = requests.get(f"https://graph.facebook.com/v14.0/me/?fields=name,id,email,picture&access_token={accessToken}")
+        FacebookUserController.userData = json.loads(response.content)
+        
+        
 
         #delete authorization code
         FacebookUserController.authCode = "Exchanged"
 
 
-        return redirect("/manageUser/facebookLogin")
+        return redirect("/manageUser/facebookLogin/")
 
        
 
