@@ -58,7 +58,7 @@ class GoogleUserController:
     #redirect to google login page 
     @staticmethod 
     def googleLoginGateway():
-        flow = GoogleUserController.googleAuthFlow(sys.path[0] + "/UserManagement/client_secret.json")
+        flow = GoogleUserController.googleAuthFlow(sys.path[0] + "/UserManagement/google_client_secret.json")
         auth_url = flow.authorization_url()
         return {"message": auth_url}
     
@@ -76,7 +76,7 @@ class GoogleUserController:
         flow =  GoogleUserController.googleAuthFlow(sys.path[0] + "/UserManagement/client_secret.json")
         flow.fetch_token(authorization_response=request.build_absolute_uri())
     
-        client_id = json.loads(open(sys.path[0] + "/UserManagement/client_secret.json").read())["web"]["client_id"]
+        client_id = json.loads(open(sys.path[0] + "/UserManagement/google_client_secret.json").read())["web"]["client_id"]
         credentials = flow.credentials
 
         request_session = requests.session()    

@@ -1,3 +1,4 @@
+from Test.settings import SECRET_KEY
 from UserManagement.models import *
 from django.http import JsonResponse
 import json, jwt, random, secrets, string

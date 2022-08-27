@@ -6,6 +6,8 @@ urlpatterns = [
     path("login/", views.login),
     path("googleLoginGateway/", views.googleLoginGateway),
     path("googleLogin/", views.googleLogin),
+    path("facebookLoginGateway/", views.facebookLoginGateway),
+    path("facebookLogin/", views.facebookLogin),
     path("logout/", views.logout),
     path("checkTwoFactorAuthCode/", views.checkTwoFactorAuthCode),
     path("confirmAccount/", views.confirmAccount),

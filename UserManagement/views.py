@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.http import JsonResponse
+from UserManagement.Controllers.FacebookUserController import FacebookUserController
 from UserManagement.Controllers.GoogleUserController import GoogleUserController
 from rest_framework.decorators import api_view
 from UserManagement.Controllers.ConfirmationCodeController import ConfirmationCodeController
@@ -28,6 +29,17 @@ def googleLoginGateway(request):
 @api_view(["GET"])
 def googleLogin(request):
     return JsonResponse(GoogleUserController.googleLogin(request))
+
+#facebook login gateway
+@api_view(["GET"])
+def facebookLoginGateway(request):
+    return JsonResponse(FacebookUserController.facebookLoginGateway())
+
+#facebook login
+@api_view(["GET"])
+def facebookLogin(request):
+    return FacebookUserController.facebookLogin(request)
+
 
 #user logout
 @api_view((["post"]))

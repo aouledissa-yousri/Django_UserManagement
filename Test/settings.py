@@ -37,7 +37,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'UserManagement'
+    'UserManagement',
+    'sslserver'
+    
 ]
 
 MIDDLEWARE = [
@@ -144,3 +146,5 @@ EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_PASSWORD = "mdsvndstlxjffbfg"
+
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "test"]

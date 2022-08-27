@@ -96,6 +96,13 @@ class GoogleUser(User, models.Model):
             "username": self.username,
             "email": self.email,
         }
+
+
+class FacebookUser(User, models.Model):
+
+    username = models.CharField(max_length = 255, default = '', unique = True)
+    name = models.CharField(max_length = 255, default = '', unique = True)
+    profileId = models.CharField(max_length = 255, default = '', unique = True)
     
 
 
