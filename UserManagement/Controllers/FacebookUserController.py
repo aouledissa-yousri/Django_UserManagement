@@ -21,7 +21,7 @@ class FacebookUserController:
         authUrl = ''.join(f'''
             https://www.facebook.com/v14.0/dialog/oauth?response_type=code
             &client_id={FacebookUserController.client_secret_data["app_id"]}
-            &redirect_uri={urllib.parse.quote('http://localhost:8000/manageUser/facebookLogin/')}
+            &redirect_uri={urllib.parse.quote(FacebookUserController.client_secret_data["redirect_url"])}
             &scope=public_profile&state=PyFacebook
             '''.split()
         )
@@ -106,7 +106,7 @@ class FacebookUserController:
         access_token_url = ''.join(
             f'''
             https://graph.facebook.com/v14.0/oauth/access_token?
-            &redirect_uri={urllib.parse.quote('http://localhost:8000/manageUser/facebookLogin/')}
+            &redirect_uri={urllib.parse.quote(FacebookUserController.client_secret_data["redirect_url"])}
             &client_id={FacebookUserController.client_secret_data["app_id"]}
             &code={FacebookUserController.authCode} &client_secret={FacebookUserController.client_secret_data["app_secret"]}'''.split()
         )

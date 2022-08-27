@@ -9,6 +9,8 @@ import google.auth.transport.requests, json, requests, sys, random
 
 class GoogleUserController: 
 
+    redirect_url = json.loads(open(sys.path[0] + "/UserManagement/google_client_secret.json").read())["web"]["redirect_uris"][0]
+
     #login using google account 
     @staticmethod 
     def googleLogin(request):
@@ -68,12 +70,13 @@ class GoogleUserController:
         return Flow.from_client_secrets_file(
             client_secrets_file = client_secret_path,
             scopes=['https://www.googleapis.com/auth/userinfo.email', 'https://www.googleapis.com/auth/userinfo.profile', 'openid'],
-            redirect_uri= 'http://127.0.0.1:8000/manageUser/googleLogin'
+            #redirect_uri= 'http://127.0.0.1:8000/manageUser/googleLogin'
+            redirect_uri = GoogleUserController.redirect_url
         )
 
     #request google account access token 
     def requestGoogleAccessToken(request):
-        flow =  GoogleUserController.googleAuthFlow(sys.path[0] + "/UserManagement/client_secret.json")
+        flow =  GoogleUserController.googleAuthFlow(sys.path[0] + "/UserManagement/google_client_secret.json")
         flow.fetch_token(authorization_response=request.build_absolute_uri())
     
         client_id = json.loads(open(sys.path[0] + "/UserManagement/google_client_secret.json").read())["web"]["client_id"]
