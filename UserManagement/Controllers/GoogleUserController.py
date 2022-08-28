@@ -35,23 +35,21 @@ class GoogleUserController:
             googleUser = GoogleUser.objects.get(username = account_data["name"])
 
             #generating access token 
-            token = Token()
-            token.setData(TokenController.generateToken({
+            token = TokenController.generateToken({
                 "username": googleUser.username,
                 "number": random.randint(0, 10000000000000000)
-            }))
+            })
 
-            access_token = token.getData()["token"]
+            
 
             #saving session token to database 
-            token = TokenSerializer(data = token.getData())
-            if token.is_valid():
-                token.save()
+            TokenController.saveToken(token, googleUser)
+
 
             return {
                 "message": "success",
                 "user": googleUser.getData(),
-                "token": access_token
+                "token": token
             }
 
 

@@ -1,3 +1,4 @@
+from tabnanny import check
 from django.shortcuts import render
 from django.http import JsonResponse
 from rest_framework.decorators import api_view
@@ -44,7 +45,8 @@ def facebookLogin(request):
 
 
 #user logout
-@api_view((["post"]))
+@api_view((["POST"]))
+@checkAccessToken
 def logout(request):
     return JsonResponse(GenericUserController.logout(request))
 

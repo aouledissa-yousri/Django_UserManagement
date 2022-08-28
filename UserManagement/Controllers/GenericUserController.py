@@ -56,7 +56,7 @@ class GenericUserController:
                     "number": random.randint(0, 10000000000000000)
                 })
 
-                TokenController.saveToken(token)
+                TokenController.saveToken(token, account)
 
                 return {
                     "message": "success",
@@ -89,8 +89,7 @@ class GenericUserController:
     #log out 
     @staticmethod 
     def logout(request):
-        data = getRequestBody(request)
-        TokenController.deleteToken(data["token"])
+        TokenController.deleteToken(request.headers["Token"])
         return {"message": "logged out"}
     
     #login withoput 2-step verification
@@ -147,14 +146,25 @@ class GenericUserController:
         data = getRequestBody(request)
         try: 
             user = GenericUser.objects.get(username = data["username"])
-            if user.twoFactorAuth:
-                data["email"] = user.email
-                return {"message": TwoFactorAuthCodeController.sendTwoFactorAuthCode(data)}
-            return GenericUserController.normalLogin(data)
+            data["email"] = user.email
+            
         except GenericUser.DoesNotExist:
             return {"message" : "User not found"}
+       
         except KeyError:
-            return {"message": "Invalid username and email"}
+            try: 
+                user = GenericUser.objects.get(email = data["email"])
+                data["username"] = user.username
+
+            except KeyError: 
+                return {"message": "Invalid username or email"}
+            
+            except GenericUser.DoesNotExist:
+                return {"message" : "User not found"}
+        
+        if user.twoFactorAuth:
+            return {"message": TwoFactorAuthCodeController.sendTwoFactorAuthCode(data)}
+        return GenericUserController.normalLogin(data)
 
     
     
@@ -194,40 +204,45 @@ class GenericUserController:
     def resetPassword(request):
         userData = getRequestBody(request)
         try: 
-            user =GenericUser.objects.get(username = userData["username"])
+            user = GenericUser.objects.get(username = userData["username"])
             user.changePassword(userData["password"])
             return "Password has been changed"
 
         except GenericUser.DoesNotExist:
             return "Invalid username"
+        
+        except KeyError:
+            return "Invalid parameters"
 
     #change username
     @staticmethod 
     def changeUsername(request):
         userData = getRequestBody(request)
         try: 
+            #check if username exists
             GenericUser.objects.get(username = userData["newUsername"])
             return {"message":"Username provided already exists"}
         
         except GenericUser.DoesNotExist: 
             try:
+                #change username and delete old access token
                 GenericUser.objects.get(username = userData["oldUsername"]).updateUsername(userData["newUsername"])
+                Token.objects.filter(token = request.headers["Token"]).delete()
+
+                token = TokenController.generateToken({
+                    "username": userData["newUsername"],
+                    "number": random.randint(0, 10000000000000000)
+                })
+
+                TokenController.saveToken(token, GenericUser.objects.get(username = userData["newUsername"]))
+
+
                 return {
                     "message ": "Username has been changed",
-                    "token": GenericUserController.generateToken({
-                        "username": userData["newUsername"]
-                    })
+                    "username": userData["newUsername"],
+                    "token": token
                 }
             
             except GenericUser.DoesNotExist:
                 return {"message":"invalid user"}
     
-
-    
-            
-
-   
-    
-        
-
-

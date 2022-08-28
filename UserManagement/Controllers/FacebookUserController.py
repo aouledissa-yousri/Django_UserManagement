@@ -1,5 +1,6 @@
 from ..serializers import FacebookUserSerializer, TokenSerializer
 from ..Controllers.TokenController import TokenController
+from django.http import JsonResponse
 from ..models import FacebookUser, Token
 from django.shortcuts import redirect
 from ..extra import *
@@ -68,23 +69,19 @@ class FacebookUserController:
                 facebookUser = FacebookUser.objects.get(profileId = FacebookUserController.userData["id"])
 
                 #generating access token 
-                token = Token()
-                token.setData(TokenController.generateToken({
+                token = TokenController.generateToken({
                     "username": facebookUser.username,
                     "number": random.randint(0, 10000000000000000)
-                }))
+                })
 
-                access_token = token.getData()["token"]
 
                 #saving session token to database 
-                token = TokenSerializer(data = token.getData())
-                if token.is_valid():
-                    token.save()
+                TokenController.saveToken(token, facebookUser)
 
                 return JsonResponse({
                     "message": "success",
                     "user": facebookUser.getData(),
-                    "token": access_token
+                    "token": token
                 })
             
 

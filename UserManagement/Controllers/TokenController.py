@@ -6,11 +6,10 @@ import jwt
 class TokenController: 
 
     @staticmethod
-    def saveToken(tk): 
+    def saveToken(tk, user): 
         token = Token()
-        token.setData(tk)
+        token.setData(tk, user)
         token = TokenSerializer(data = token.getData())
-        print(token)
 
         if token.is_valid():
             token.save()

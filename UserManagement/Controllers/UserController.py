@@ -1,6 +1,6 @@
 from Test.settings import SECRET_KEY
 from ..extra import *
-from ..models import User
+from ..models import GenericUser
 import jwt
 
 class UserController: 

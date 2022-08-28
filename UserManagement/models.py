@@ -74,8 +74,9 @@ class GenericUser(User, models.Model):
         GenericUser.objects.filter(id = self.id).update(verified= self.verified)
     
     def changePassword(self, password):
-        self.password = hashlib.sha512(str(password).encode("UTF-8")).hexdigest() 
-        GenericUser.objects.filter(id = self.id).update(password = self.password)
+        self.salt = randomSalt(random.randint(1, 100))
+        self.password = encryptPassword(password, self.salt)
+        GenericUser.objects.filter(id = self.id).update(password = self.password, salt = self.salt)
     
     def updateUsername(self, username):
         self.username = username 
@@ -177,13 +178,17 @@ class TwoFactorAuthCode(models.Model):
 class Token(models.Model):
 
     token = models.CharField(max_length = 255, default = '', unique = True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, default=0)
 
-    def setData(self, token):
+
+    def setData(self, token, user):
         self.token = token 
-    
+        self.user = user
+
     def getData(self):
         return {
-            "token": self.token
+            "token": self.token,
+            "user": self.user.id
         }
 
 
