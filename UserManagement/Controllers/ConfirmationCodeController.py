@@ -15,11 +15,11 @@ class ConfirmationCodeController:
         message = "Hello "+ userData["username"] + ",\nThank you for signining up Here is your confirmation code: "+ confirmationCode
 
         code = ConfirmationCode()
-        code.setData(confirmationCode, User.objects.get(username = userData["username"]))
+        code.setData(confirmationCode, GenericUser.objects.get(username = userData["username"]))
         code = ConfirmationCodeSerializer(data = code.getData())
 
         if code.is_valid():
-            ConfirmationCode.objects.filter(user_id = User.objects.get(username = userData["username"]).id).delete()
+            ConfirmationCode.objects.filter(user_id = GenericUser.objects.get(username = userData["username"]).id).delete()
             code.save()
             if template != None:
                 message = render_to_string(template, {"message": message})

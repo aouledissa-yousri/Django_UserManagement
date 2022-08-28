@@ -9,6 +9,8 @@ urlpatterns = [
     path("facebookLoginGateway/", views.facebookLoginGateway),
     path("facebookLogin/", views.facebookLogin),
     path("logout/", views.logout),
+    path("enableTwoFactorAuth/", views.enableTwoFactorAuth),
+    path("disableTwoFactorAuth/", views.disableTwoFactorAuth),
     path("checkTwoFactorAuthCode/", views.checkTwoFactorAuthCode),
     path("confirmAccount/", views.confirmAccount),
     path("sendConfirmationEmail/", views.sendConfirmationEmail),
@@ -16,6 +18,7 @@ urlpatterns = [
     path("checkPasswordResetCode/", views.checkPasswordResetCode),
     path("resetPassword/", views.resetPassword),
     path("changePassword/", views.changePassword),
-    path("updateUsername/", views.updateUsername)
+    path("updateUsername/", views.updateUsername),
+    path("deleteAccount/", views.deleteAccount),
 
 ]

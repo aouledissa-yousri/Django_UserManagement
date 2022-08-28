@@ -1,5 +1,5 @@
-import hashlib
-from ..models import User
+from ..models import GenericUser
+from ..extra import encryptPassword
 
 class Credentials: 
 
@@ -8,13 +8,11 @@ class Credentials:
         self.addUsernameAndEmail(data)
 
         if passwordFromUser:
-            self.password = hashlib.sha512(str(data["password"]).encode("UTF-8")).hexdigest()
+            self.password = encryptPassword(data["password"], GenericUser.objects.get(username = data["username"]).salt)
 
         else:
             self.password = data["password"]
-
         
-
     
     def getPassword(self):
         return self.password
@@ -33,9 +31,9 @@ class Credentials:
 
         except KeyError:
             if "email" in data.keys():
-                self.username = User.objects.get(email = data["email"]).username
+                self.username = GenericUser.objects.get(email = data["email"]).username
             elif "username" in data.keys(): 
-                self.email = User.objects.get(username = data["username"]).email
+                self.email = GenericUser.objects.get(username = data["username"]).email
             else: 
                 self.username = ""
                 self.email = ""

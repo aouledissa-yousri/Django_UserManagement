@@ -2,8 +2,8 @@ from django.db import models
 from django.db.models import Q
 from django.utils import timezone
 from datetime import timedelta 
-import hashlib
-import time
+from UserManagement.classes.HashModule import *
+import hashlib, time, random
 
 # Create your models here.
 
@@ -16,6 +16,7 @@ class GenericUser(User, models.Model):
     username = models.CharField(max_length = 255, default = '', unique = True)
     email = models.CharField(max_length = 255, default = '', unique = True)
     password = models.CharField(max_length = 255, default = '', unique = True)
+    salt = models.CharField(max_length = 255, default = '', unique = True)
     tries = models.IntegerField(default = 3)
     blocked = models.BooleanField(default=False)
     verified = models.BooleanField(default=False)
@@ -25,7 +26,9 @@ class GenericUser(User, models.Model):
     def setData(self, data):
         self.username = data["username"]
         self.email = data["email"]
-        self.password = hashlib.sha512(str(data["password"]).encode("UTF-8")).hexdigest()
+        self.salt = randomSalt(random.randint(1, 100))
+        print(self.salt)
+        self.password = encryptPassword(data["password"], self.salt)
     
     def getData(self):
         return {
@@ -36,6 +39,7 @@ class GenericUser(User, models.Model):
     def getAllUserData(self): 
         data = self.getData()
         data["password"] = self.password
+        data["salt"] = self.salt
         return data
     
     def getTries(self):
@@ -44,42 +48,42 @@ class GenericUser(User, models.Model):
     def decrementTries(self):
         if self.tries > 0:
             self.tries -= 1 
-            User.objects.filter(id = self.id).update(tries= self.getTries())
+            GenericUser.objects.filter(id = self.id).update(tries= self.getTries())
     
     def restartTries(self):
         self.tries = 3
-        User.objects.filter(id = self.id).update(tries= self.getTries())
+        GenericUser.objects.filter(id = self.id).update(tries= self.getTries())
     
     def isBlocked(self):
         return self.blocked == True
     
     def block(self):
         self.blocked = True
-        User.objects.filter(id = self.id).update(blocked= self.blocked)
+        GenericUser.objects.filter(id = self.id).update(blocked= self.blocked)
     
     def unblock(self):
         time.sleep(10000)
         print("hello")
         self.restartTries()
         self.blocked = False
-        User.objects.filter(id = self.id).update(blocked= self.blocked)
+        GenericUser.objects.filter(id = self.id).update(blocked= self.blocked)
     
 
     def verify(self):
         self.verified = True 
-        User.objects.filter(id = self.id).update(verified= self.verified)
+        GenericUser.objects.filter(id = self.id).update(verified= self.verified)
     
     def changePassword(self, password):
         self.password = hashlib.sha512(str(password).encode("UTF-8")).hexdigest() 
-        User.objects.filter(id = self.id).update(password = self.password)
+        GenericUser.objects.filter(id = self.id).update(password = self.password)
     
     def updateUsername(self, username):
         self.username = username 
-        User.objects.filter(id = self.id).update(username = self.username)
+        GenericUser.objects.filter(id = self.id).update(username = self.username)
 
     @staticmethod
     def login(credentials):
-        return User.objects.get( Q(username=credentials.getUsername()) | Q(email=credentials.getEmail() ))
+        return GenericUser.objects.get( Q(username=credentials.getUsername()) | Q(email=credentials.getEmail() ))
 
 
 class GoogleUser(User, models.Model):

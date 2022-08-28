@@ -97,6 +97,25 @@ class GenericUserController:
     @staticmethod 
     def normalLogin(data):
         return GenericUserController.login(data)
+    
+    #enable two factor authentication
+    @staticmethod 
+    def manageTwoFactorAuth(request):
+        data = getRequestBody(request)
+
+        #search for user 
+        try: 
+            if "enableTwoFactorAuth" in request.path:
+                GenericUser.objects.filter(username = data["username"]).update(twoFactorAuth = True)
+                return {"message": "2 factor authentication enabled"}
+
+            elif "disableTwoFactorAuth" in request.path:
+                GenericUser.objects.filter(username = data["username"]).update(twoFactorAuth = False)
+                return {"message": "2 factor authentication disabled"}
+        
+        except GenericUser.DoesNotExist: 
+            return {"message": "user does not exist"}
+    
 
 
     #check verification code
@@ -127,12 +146,12 @@ class GenericUserController:
     def loginGateway(request):
         data = getRequestBody(request)
         try: 
-            user = User.objects.get(username = data["username"])
+            user = GenericUser.objects.get(username = data["username"])
             if user.twoFactorAuth:
                 data["email"] = user.email
                 return {"message": TwoFactorAuthCodeController.sendTwoFactorAuthCode(data)}
             return GenericUserController.normalLogin(data)
-        except User.DoesNotExist:
+        except GenericUser.DoesNotExist:
             return {"message" : "User not found"}
         except KeyError:
             return {"message": "Invalid username and email"}

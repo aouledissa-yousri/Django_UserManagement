@@ -1,12 +1,14 @@
 from django.shortcuts import render
 from django.http import JsonResponse
+from rest_framework.decorators import api_view
 from UserManagement.Controllers.FacebookUserController import FacebookUserController
 from UserManagement.Controllers.GoogleUserController import GoogleUserController
-from rest_framework.decorators import api_view
 from UserManagement.Controllers.ConfirmationCodeController import ConfirmationCodeController
 from UserManagement.Controllers.GenericUserController import GenericUserController
 from UserManagement.Controllers.PasswordResetCodeController import PasswordResetCodeController
+from UserManagement.Controllers.UserController import UserController
 from UserManagement.extra import *
+from UserManagement.decorators import *
 
 # Create your views here.
 
@@ -46,6 +48,18 @@ def facebookLogin(request):
 def logout(request):
     return JsonResponse(GenericUserController.logout(request))
 
+#enable 2 factor authentication
+@api_view(["POST"])
+@checkAccessToken
+def enableTwoFactorAuth(request):
+    return JsonResponse(GenericUserController.manageTwoFactorAuth(request))
+
+#disable 2 factor authentication 
+@api_view(["POST"])
+@checkAccessToken
+def disableTwoFactorAuth(request):
+    return JsonResponse(GenericUserController.manageTwoFactorAuth(request))
+
 #check if 2-step verification code is correct
 @api_view(["POST"])
 def checkTwoFactorAuthCode(request):
@@ -53,7 +67,6 @@ def checkTwoFactorAuthCode(request):
 
 #verify account
 @api_view(["POST"])
-@checkAccessToken
 def confirmAccount(request):
     return JsonResponse({"result": GenericUserController.confirmAccount(request)})
 
@@ -89,6 +102,13 @@ def changePassword(request):
 @checkAccessToken
 def updateUsername(request):
     return JsonResponse({"result" : GenericUserController.changeUsername(request)})
+
+
+#delete account 
+@api_view(["POST"])
+@checkAccessToken
+def deleteAccount(request):
+    return JsonResponse(UserController.deleteAccount(request))
 
 
 
