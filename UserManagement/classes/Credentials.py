@@ -1,5 +1,5 @@
-from ..models import GenericUser
-from ..extra import encryptPassword
+from ..models.GenericUser import GenericUser
+from ..classes.HashModule import encryptPassword
 
 class Credentials: 
 

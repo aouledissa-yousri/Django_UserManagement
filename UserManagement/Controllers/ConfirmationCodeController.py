@@ -3,9 +3,12 @@ from django.utils.html import strip_tags
 from UserManagement.models import ConfirmationCode
 from UserManagement.serializers import ConfirmationCodeSerializer
 from django.template.loader import render_to_string
-from ..models import *
+from ..models.ConfirmationCode import ConfirmationCode
+from ..models.GenericUser import GenericUser
 from Test.settings import EMAIL_HOST_USER
 from ..extra import *
+from django.utils import timezone
+
 
 class ConfirmationCodeController: 
     
@@ -20,6 +23,7 @@ class ConfirmationCodeController:
 
         if code.is_valid():
             ConfirmationCode.objects.filter(user_id = GenericUser.objects.get(username = userData["username"]).id).delete()
+            print(timezone.now())
             code.save()
             if template != None:
                 message = render_to_string(template, {"message": message})

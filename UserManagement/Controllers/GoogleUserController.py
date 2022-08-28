@@ -2,7 +2,7 @@
 from google_auth_oauthlib.flow import Flow
 from google.oauth2 import id_token
 from pip._vendor import cachecontrol
-from ..models import GoogleUser, Token
+from ..models.GoogleUser import GoogleUser
 from ..serializers import GoogleUserSerializer, TokenSerializer
 from ..Controllers.TokenController import TokenController
 import google.auth.transport.requests, json, requests, sys, random

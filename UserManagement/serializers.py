@@ -1,5 +1,11 @@
 from rest_framework import serializers 
-from .models import * 
+from .models.GenericUser import GenericUser
+from .models.GoogleUser import GoogleUser
+from .models.FacebookUser import FacebookUser
+from .models.ConfirmationCode import ConfirmationCode
+from .models.PasswordResetCode import PasswordResetCode
+from .models.TwoFactorAuthCode import TwoFactorAuthCode
+from .models.Token import Token
 
 class GenericUserSerializer(serializers.ModelSerializer):
     class Meta: 

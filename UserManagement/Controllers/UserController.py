@@ -1,7 +1,8 @@
 from Test.settings import SECRET_KEY
 from UserManagement.Controllers.TokenController import TokenController
 from ..extra import *
-from ..models import GenericUser
+from ..models.GenericUser import GenericUser
+from ..models.Token import Token
 import jwt
 
 class UserController: 

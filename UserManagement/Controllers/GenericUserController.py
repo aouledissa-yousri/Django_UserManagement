@@ -3,7 +3,8 @@ from UserManagement.Controllers.ConfirmationCodeController import ConfirmationCo
 from UserManagement.Controllers.TwoFactorAuthCodeController import TwoFactorAuthCodeController
 from UserManagement.Controllers.TokenController import TokenController
 from ..serializers import GenericUserSerializer
-from ..models import ConfirmationCode, GenericUser
+from ..models.ConfirmationCode import ConfirmationCode
+from ..models.GenericUser import GenericUser 
 from ..classes.Credentials import Credentials
 from Test.settings import SECRET_KEY
 from django.utils import timezone

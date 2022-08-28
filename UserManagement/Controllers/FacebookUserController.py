@@ -1,7 +1,7 @@
 from ..serializers import FacebookUserSerializer, TokenSerializer
 from ..Controllers.TokenController import TokenController
 from django.http import JsonResponse
-from ..models import FacebookUser, Token
+from ..models.FacebookUser import FacebookUser
 from django.shortcuts import redirect
 from ..extra import *
 import urllib.parse

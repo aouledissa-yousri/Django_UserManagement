@@ -1,5 +1,6 @@
 from UserManagement.extra import generateCode
-from UserManagement.models import *
+from UserManagement.models.TwoFactorAuthCode import TwoFactorAuthCode
+from UserManagement.models.User import User
 from UserManagement.serializers import *
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
