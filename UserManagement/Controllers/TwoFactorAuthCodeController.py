@@ -9,6 +9,8 @@ from Test.settings import EMAIL_HOST_USER
 
 class TwoFactorAuthCodeController: 
 
+
+    #send two factor authentication code to the user's email address
     @staticmethod 
     def sendTwoFactorAuthCode(userData, template=None):
         twoFactorAuthCode = generateCode()

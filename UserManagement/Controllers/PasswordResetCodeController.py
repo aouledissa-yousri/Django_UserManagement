@@ -10,6 +10,7 @@ from UserManagement.serializers import PasswordResetCodeSerializer
 
 class PasswordResetCodeController:
     
+    #send password reset code to the user's email address
     @staticmethod 
     def sendPasswordResetCode(userData, template = None):
         passwordResetCode = generateCode()
