@@ -30,8 +30,12 @@ class GenericUserController:
         try:
             GenericUser.objects.get(username = userData["username"])
             return "Account already exists"
+
         except GenericUser.DoesNotExist:
             return "Account creation failed"
+        
+        except KeyError: 
+            return "Invalid parameters"
 
 
     #login to an existing account
@@ -85,6 +89,9 @@ class GenericUserController:
         #if user is not found
         except GenericUser.DoesNotExist : 
             return {"message":"user not found"}
+        
+        except KeyError: 
+            return {"message": "invalid parameters"}
     
     
     #login withoput 2-step verification
@@ -109,6 +116,9 @@ class GenericUserController:
         
         except GenericUser.DoesNotExist: 
             return {"message": "user does not exist"}
+        
+        except KeyError: 
+            return {"message": "Invalid parameters"}
     
 
 
@@ -168,6 +178,7 @@ class GenericUserController:
     def confirmAccount(request):
         data = getRequestBody(request)
         user = GenericUser.objects.get(username = data["username"])
+
         try:
             confirmationCode = ConfirmationCode.objects.get(code = data["code"], user_id = user.id)
             if confirmationCode.expirationDate >= timezone.now():
@@ -175,8 +186,12 @@ class GenericUserController:
                 confirmationCode.delete()
                 return GenericUserController.login(user.getAllUserData(), False)
             return "Confirmation code has been expired"
+
         except ConfirmationCode.DoesNotExist:
             return "Confirmation code is not valid"
+        
+        except KeyError: 
+            return "Invalid parameters"
            
     
     #check password reset code
@@ -191,8 +206,12 @@ class GenericUserController:
                     "user": User.objects.get(id = passwordResetCode.user.id).getData()
                 }
             return "Password reset code has been expired"
+
         except PasswordResetCode.DoesNotExist:
             return "Password reset code is not valid"
+        
+        except KeyError:
+            return "Invalid parameters"
     
     #reset password
     @staticmethod 
@@ -240,4 +259,7 @@ class GenericUserController:
             
             except GenericUser.DoesNotExist:
                 return {"message":"invalid user"}
+        
+        except KeyError: 
+            return {"message": "invalid parameters"}
     

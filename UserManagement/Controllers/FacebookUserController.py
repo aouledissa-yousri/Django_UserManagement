@@ -10,8 +10,13 @@ import sys, json, requests
 
 class FacebookUserController: 
     
+    #read facebook app data 
     client_secret_data = json.loads(open(sys.path[0] + "/UserManagement/facebook_client_secret.json").read())
+
+    #login instance authorization code
     authCode = ""
+
+    #login instance user data
     userData = {}
 
 

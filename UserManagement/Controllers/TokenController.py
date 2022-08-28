@@ -6,6 +6,7 @@ import jwt
 
 class TokenController: 
 
+    #save access token in database
     @staticmethod
     def saveToken(tk, user): 
         token = Token()
@@ -15,6 +16,7 @@ class TokenController:
         if token.is_valid():
             token.save()
     
+    #delete access token from database
     @staticmethod 
     def deleteToken(tk): 
         Token.objects.filter(token = tk).delete()

@@ -56,6 +56,12 @@ def logout(request):
 def logoutAllSessions(request):
     return JsonResponse(UserController.logoutAllSessions(request))
 
+#logout from all other sessions
+@api_view((["POST"]))
+@checkAccessToken
+def logoutAllOtherSessions(request):
+    return JsonResponse(UserController.logoutAllOtherSessions(request))
+
 
 #enable 2 factor authentication
 @api_view(["POST"])
@@ -110,7 +116,7 @@ def changePassword(request):
 @api_view(["POST"])
 @checkAccessToken
 def updateUsername(request):
-    return JsonResponse({"result" : GenericUserController.changeUsername(request)})
+    return JsonResponse(GenericUserController.changeUsername(request))
 
 
 #delete account 
