@@ -37,6 +37,7 @@ class GoogleUserController:
             #generating access token 
             token = TokenController.generateToken({
                 "username": googleUser.username,
+                "id": googleUser.id,
                 "number": random.randint(0, 10000000000000000)
             })
 

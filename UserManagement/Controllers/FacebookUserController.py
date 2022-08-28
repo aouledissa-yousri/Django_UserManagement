@@ -71,6 +71,7 @@ class FacebookUserController:
                 #generating access token 
                 token = TokenController.generateToken({
                     "username": facebookUser.username,
+                    "id": facebookUser.id,
                     "number": random.randint(0, 10000000000000000)
                 })
 

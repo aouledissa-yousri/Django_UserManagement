@@ -9,6 +9,7 @@ urlpatterns = [
     path("facebookLoginGateway/", views.facebookLoginGateway),
     path("facebookLogin/", views.facebookLogin),
     path("logout/", views.logout),
+    path("logoutAllSessions/", views.logoutAllSessions),
     path("enableTwoFactorAuth/", views.enableTwoFactorAuth),
     path("disableTwoFactorAuth/", views.disableTwoFactorAuth),
     path("checkTwoFactorAuthCode/", views.checkTwoFactorAuthCode),

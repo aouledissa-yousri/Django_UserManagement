@@ -28,3 +28,18 @@ class UserController:
     def logout(request):
         TokenController.deleteToken(request.headers["Token"])
         return {"message": "logged out"}
+
+
+    #logout from all sessions 
+    @staticmethod 
+    def logoutAllSessions(request):
+        decodedToken = TokenController.decodeToken(request.headers["Token"])
+
+        try: 
+            user = User.objects.get(id = decodedToken["id"])
+            Token.objects.filter(user_id = user.id).delete()
+            return {"message": "logged out from all sessions"}
+        
+        except User.DoesNotExist: 
+            return {"message": "user not found"}
+

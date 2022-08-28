@@ -50,6 +50,13 @@ def facebookLogin(request):
 def logout(request):
     return JsonResponse(UserController.logout(request))
 
+#logout from all sessions
+@api_view((["POST"]))
+@checkAccessToken
+def logoutAllSessions(request):
+    return JsonResponse(UserController.logoutAllSessions(request))
+
+
 #enable 2 factor authentication
 @api_view(["POST"])
 @checkAccessToken

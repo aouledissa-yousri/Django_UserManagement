@@ -53,6 +53,7 @@ class GenericUserController:
 
                 token = TokenController.generateToken({
                     "username": account.username,
+                    "id": account.id,
                     "number": random.randint(0, 10000000000000000)
                 })
 

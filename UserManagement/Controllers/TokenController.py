@@ -1,5 +1,6 @@
 from ..models import Token
 from ..serializers import TokenSerializer
+from django.http import JsonResponse
 from Test.settings import SECRET_KEY
 import jwt
 
@@ -21,4 +22,13 @@ class TokenController:
     #generate access token
     def generateToken(payload):
         return jwt.encode(payload, SECRET_KEY, algorithm = "HS512")
+    
+    #decode access token 
+    def decodeToken(token, algorithm = "HS512"): 
+        try:
+            decodedToken = jwt.decode(token, SECRET_KEY, algorithms = [algorithm])
+            return decodedToken
+            
+        except jwt.exceptions.DecodeError:
+            return {"message": "invalid token"}
 
