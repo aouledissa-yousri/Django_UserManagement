@@ -48,7 +48,7 @@ def facebookLogin(request):
 @api_view((["POST"]))
 @checkAccessToken
 def logout(request):
-    return JsonResponse(GenericUserController.logout(request))
+    return JsonResponse(UserController.logout(request))
 
 #enable 2 factor authentication
 @api_view(["POST"])

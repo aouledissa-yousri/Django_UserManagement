@@ -85,12 +85,6 @@ class GenericUserController:
         except GenericUser.DoesNotExist : 
             return {"message":"user not found"}
     
-
-    #log out 
-    @staticmethod 
-    def logout(request):
-        TokenController.deleteToken(request.headers["Token"])
-        return {"message": "logged out"}
     
     #login withoput 2-step verification
     @staticmethod 

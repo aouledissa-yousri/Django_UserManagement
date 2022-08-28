@@ -9,9 +9,8 @@ def checkAccessToken(func, algorithm="HS512"):
     def wrapper(request, *args, **kwargs):
         try: 
             _token = request.headers["Token"]
-            print(_token)
             try:
-                decodedToken = jwt.decode(_token, SECRET_KEY, algorithms = [algorithm])
+                jwt.decode(_token, SECRET_KEY, algorithms = [algorithm])
 
                 try:
                     #User.objects.get(username = decodedToken["username"])   

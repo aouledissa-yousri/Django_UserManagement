@@ -27,7 +27,6 @@ class GenericUser(User, models.Model):
         self.username = data["username"]
         self.email = data["email"]
         self.salt = randomSalt(random.randint(1, 100))
-        print(self.salt)
         self.password = encryptPassword(data["password"], self.salt)
     
     def getData(self):
@@ -63,7 +62,6 @@ class GenericUser(User, models.Model):
     
     def unblock(self):
         time.sleep(10000)
-        print("hello")
         self.restartTries()
         self.blocked = False
         GenericUser.objects.filter(id = self.id).update(blocked= self.blocked)
