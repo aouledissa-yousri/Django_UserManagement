@@ -6,11 +6,8 @@ from ..serializers import GenericUserSerializer
 from ..models.ConfirmationCode import ConfirmationCode
 from ..models.GenericUser import GenericUser 
 from ..classes.Credentials import Credentials
-from Test.settings import SECRET_KEY
 from django.utils import timezone
-from django.shortcuts import redirect
 from ..extra import *
-import jwt
 
 
 
@@ -26,7 +23,7 @@ class GenericUserController:
         user = GenericUserSerializer(data = user.getAllUserData())
         if user.is_valid():
             user.save()
-            ConfirmationCodeController.sendConfirmationEmail(userData, template)
+            #ConfirmationCodeController.sendConfirmationEmail(userData, request, template)
             return "Account created successfully now you need to verify your account"
         try:
             GenericUser.objects.get(username = userData["username"])
@@ -41,17 +38,20 @@ class GenericUserController:
 
     #login to an existing account
     @staticmethod 
-    def login(data, passwordFromUser = True):
+    def login(data, request = None, passwordFromUser = True):
         try: 
 
             #serach for user in database 
             credentials = Credentials(data, passwordFromUser)
             account = GenericUser.login(credentials)
+            print(data["password"])
+            print("credentials password: " + credentials.password)
+            print("account password: " + account.password)
 
             #if username (or email) and password are correct get user data and access token 
             if account.password == credentials.getPassword() and (not account.isBlocked()):
                 if not account.verified: 
-                    ConfirmationCodeController.sendConfirmationEmail(account.getData(), None)
+                    ConfirmationCodeController.sendConfirmationEmail(account.getData(), request)
                     return {"message": "You need to verify your account"}
 
                 account.restartTries()
@@ -97,8 +97,8 @@ class GenericUserController:
     
     #login withoput 2-step verification
     @staticmethod 
-    def normalLogin(data):
-        return GenericUserController.login(data)
+    def normalLogin(data, request):
+        return GenericUserController.login(data, request)
     
     #enable two factor authentication
     @staticmethod 
@@ -169,8 +169,8 @@ class GenericUserController:
                 return {"message" : "User not found"}
         
         if user.twoFactorAuth:
-            return {"message": TwoFactorAuthCodeController.sendTwoFactorAuthCode(data)}
-        return GenericUserController.normalLogin(data)
+            return {"message": TwoFactorAuthCodeController.sendTwoFactorAuthCode(data, request)}
+        return GenericUserController.normalLogin(data, request)
 
     
     
@@ -185,14 +185,15 @@ class GenericUserController:
             if confirmationCode.expirationDate >= timezone.now():
                 user.verify()
                 confirmationCode.delete()
-                return GenericUserController.login(user.getAllUserData(), False)
-            return "Confirmation code has been expired"
+                print("user password :"+ user.getAllUserData()["password"])
+                return GenericUserController.login(user.getAllUserData(), passwordFromUser = False)
+            return {"message": "Confirmation code has been expired"}
 
         except ConfirmationCode.DoesNotExist:
-            return "Confirmation code is not valid"
+            return {"message": "Confirmation code is not valid"}
         
         except KeyError: 
-            return "Invalid parameters"
+            return {"message": "Invalid parameters"}
            
     
     #check password reset code
@@ -263,4 +264,7 @@ class GenericUserController:
         
         except KeyError: 
             return {"message": "invalid parameters"}
+    
+
+    
     

@@ -6,3 +6,5 @@ from .GoogleUser import GoogleUser
 from .PasswordResetCode import PasswordResetCode 
 from .Token import Token 
 from .TwoFactorAuthCode import TwoFactorAuthCode
+from .Location import Location
+from .LocationCode import LocationCode

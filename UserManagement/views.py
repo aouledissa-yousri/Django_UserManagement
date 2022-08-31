@@ -1,3 +1,4 @@
+from datetime import timezone
 from tabnanny import check
 from django.shortcuts import render
 from django.http import JsonResponse
@@ -21,6 +22,12 @@ def signUp(request):
 #user login
 @api_view(["POST"])
 def login(request):
+    return JsonResponse(GenericUserController.loginGateway(request))
+
+#user location-based login
+@api_view(["POST"])
+@checkUserLocation
+def locationBasedLogin(request):
     return JsonResponse(GenericUserController.loginGateway(request))
 
 #google login gateway 
@@ -83,7 +90,7 @@ def checkTwoFactorAuthCode(request):
 #verify account
 @api_view(["POST"])
 def confirmAccount(request):
-    return JsonResponse({"result": GenericUserController.confirmAccount(request)})
+    return JsonResponse(GenericUserController.confirmAccount(request))
 
 #send confirmation email to account
 @api_view(["POST"])
@@ -125,6 +132,11 @@ def updateUsername(request):
 def deleteAccount(request):
     return JsonResponse(UserController.deleteAccount(request))
 
+
+#verify new login location 
+@api_view(["GET"])
+def verifyNewLocation(request):
+    return JsonResponse(LocationController.verifyNewLocation(request))
 
 
 

@@ -77,6 +77,11 @@ WSGI_APPLICATION = 'Test.wsgi.application'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
 DATABASES = {
+     'TEST': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    },
+
     'default': {
         #'ENGINE': 'django.db.backends.sqlite3',
         #'NAME': BASE_DIR / 'db.sqlite3'
@@ -86,13 +91,11 @@ DATABASES = {
         'USER': 'qtqndhzjcfuvtz',
         'PASSWORD': 'b0f3d67c2c233934a3f3e39092cc58af647ce778654490dce56fb3b1a791714f',
         'HOST': 'ec2-52-22-136-117.compute-1.amazonaws.com',
-        'PORT': '5432',
-    },
+        'PORT': '5432'
 
-    'TEST': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
+
+   
 }
 
 
@@ -147,4 +150,4 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_PASSWORD = "mdsvndstlxjffbfg"
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "test"]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "9a14-102-158-67-170.eu.ngrok.io"]

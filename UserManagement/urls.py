@@ -3,7 +3,8 @@ from UserManagement import views
 
 urlpatterns = [
     path("signUp/", views.signUp, name = "signUp"),
-    path("login/", views.login),
+    path("login/", views.login, name = "login"),
+    path("locationBasedLogin/", views.locationBasedLogin, name = "location based login"),
     path("googleLoginGateway/", views.googleLoginGateway),
     path("googleLogin/", views.googleLogin),
     path("facebookLoginGateway/", views.facebookLoginGateway),
@@ -22,5 +23,6 @@ urlpatterns = [
     path("changePassword/", views.changePassword),
     path("updateUsername/", views.updateUsername),
     path("deleteAccount/", views.deleteAccount),
+    path("verifyNewLocation/", views.verifyNewLocation),
 
 ]

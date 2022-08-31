@@ -2,8 +2,7 @@ from UserManagement.models.User import User
 from django.db import models
 from ..classes.HashModule import *
 from django.db.models import Q
-from ..extra import *
-import hashlib, time, random
+import time, random
 
 
 

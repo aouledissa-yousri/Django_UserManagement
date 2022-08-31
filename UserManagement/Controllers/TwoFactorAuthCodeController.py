@@ -6,6 +6,7 @@ from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.core.mail import EmailMultiAlternatives, EmailMessage
 from Test.settings import EMAIL_HOST_USER
+from ..extra import generateExpirationDate
 
 
 class TwoFactorAuthCodeController: 
@@ -13,12 +14,12 @@ class TwoFactorAuthCodeController:
 
     #send two factor authentication code to the user's email address
     @staticmethod 
-    def sendTwoFactorAuthCode(userData, template=None):
+    def sendTwoFactorAuthCode(userData, request, template=None):
         twoFactorAuthCode = generateCode()
         message = "Hello "+ userData["username"] + ",\nHere is your 2-step verification code : "+ twoFactorAuthCode
 
         twoFactorCode = TwoFactorAuthCode()
-        twoFactorCode.setData(twoFactorAuthCode, User.objects.get(username = userData["username"]))
+        twoFactorCode.setData(twoFactorAuthCode, User.objects.get(username = userData["username"]), generateExpirationDate(request))
         twoFactorCode = TwoFactorAuthCodeSerializer(data = twoFactorCode.getData())
 
         if twoFactorCode.is_valid():

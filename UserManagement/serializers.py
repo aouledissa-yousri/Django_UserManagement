@@ -6,6 +6,9 @@ from .models.ConfirmationCode import ConfirmationCode
 from .models.PasswordResetCode import PasswordResetCode
 from .models.TwoFactorAuthCode import TwoFactorAuthCode
 from .models.Token import Token
+from .models.Location import Location
+from .models.LocationCode import LocationCode
+
 
 class GenericUserSerializer(serializers.ModelSerializer):
     class Meta: 
@@ -41,3 +44,16 @@ class TokenSerializer(serializers.ModelSerializer):
     class Meta: 
         model = Token 
         fields = "__all__"
+
+class LocationSerializer(serializers.ModelSerializer):
+    class Meta: 
+        model = Location
+        fields = "__all__"
+
+class LocationCodeSerializer(serializers.ModelSerializer):
+    class Meta: 
+        model = LocationCode
+        fields = "__all__"
+
+
+
