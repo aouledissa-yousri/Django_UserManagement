@@ -5,7 +5,7 @@ from UserManagement.Controllers.TokenController import TokenController
 from ..serializers import GenericUserSerializer
 from ..models.ConfirmationCode import ConfirmationCode
 from ..models.GenericUser import GenericUser 
-from ..classes.Credentials import Credentials
+from ..helpers.Credentials import Credentials
 from django.utils import timezone
 from ..extra import *
 
@@ -23,8 +23,7 @@ class GenericUserController:
         user = GenericUserSerializer(data = user.getAllUserData())
         if user.is_valid():
             user.save()
-            #ConfirmationCodeController.sendConfirmationEmail(userData, request, template)
-            return "Account created successfully now you need to verify your account"
+            return "Account created successfully"
         try:
             GenericUser.objects.get(username = userData["username"])
             return "Account already exists"

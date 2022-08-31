@@ -1,6 +1,5 @@
 from ..models.Token import Token
 from ..serializers import TokenSerializer
-from django.http import JsonResponse
 from Test.settings import SECRET_KEY
 import jwt
 

@@ -1,6 +1,6 @@
 from UserManagement.models.User import User
 from django.db import models
-from ..classes.HashModule import *
+from ..helpers.HashModule import *
 from django.db.models import Q
 import time, random
 

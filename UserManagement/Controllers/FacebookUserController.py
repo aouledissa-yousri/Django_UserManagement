@@ -1,4 +1,4 @@
-from ..serializers import FacebookUserSerializer, TokenSerializer
+from ..serializers import FacebookUserSerializer
 from ..Controllers.TokenController import TokenController
 from django.http import JsonResponse
 from ..models.FacebookUser import FacebookUser
